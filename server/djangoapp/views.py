@@ -157,6 +157,7 @@ def add_review(request, dealer_id):
             if int(result.status_code) == 200:
                 print("Review posted successfully.")
 
+            print(result.status_code)
             # After posting the review the user is redirected back to the dealer details page
             return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
 
