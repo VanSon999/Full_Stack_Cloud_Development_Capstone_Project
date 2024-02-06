@@ -1,62 +1,145 @@
-<html>
-    <head>
-        <title>Contact Us</title>
-        <link href="https://fonts.googleapis.com/css?family=Roboto:400,100,300,700" rel="stylesheet" type="text/css">
-    </head>
-    <body>
-        <div class="row justify-content-center">
-              <div class="wrapper">
-                <div class="row no-gutters">
-                  <div class="col-md-5 d-flex align-items-stretch">
-                    <div class="info-wrap bg-primary w-100 p-lg-5 p-4">
-                      <h3 class="mb-4 mt-md-4">Contact us</h3>
-                      <div class="dbox w-100 d-flex align-items-start">
-                        <div class="icon d-flex align-items-center justify-content-center">
-                          <span class="fa fa-map-marker"></span>
+{% extends 'base.html' %}
+{% block content %}
+<style>
+body{
+  color:#fff
+}
+.right_conatct_social_icon{
+     background: linear-gradient(to top right, #1325e8 -5%, #8f10b7 100%);
+}
+.contact_us{
+    background-color: #f1f1f1;
+    padding: 120px 0px;
+}
+
+.contact_inner{
+    background-color: antiquewhite;
+    position: relative;
+    box-shadow: 30px 30px 44px #cccc;
+    border-radius: 25px;
+}
+.contact_field{
+    padding: 60px 340px 90px 100px;
+}
+.right_conatct_social_icon{
+    height: 100%;
+}
+
+.contact_field h3{
+   color: #000;
+    font-size: 40px;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-bottom: 10px
+}
+.contact_field p{
+    color: #000;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    margin-bottom: 35px;
+}
+.contact_field .form-control{
+    border-radius: 0px;
+    border: none;
+    border-bottom: 1px solid #ccc;
+}
+.contact_field .form-control:focus{
+    box-shadow: none;
+    outline: none;
+    border-bottom: 2px solid #1325e8;
+}
+.contact_field .form-control::placeholder{
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.contact_info_sec {
+    position: absolute;
+    background-color: #2d2d2d;
+    right: 1px;
+    top: 18%;
+    height: 340px;
+    width: 340px;
+    padding: 40px;
+    border-radius: 25px 0 0 25px;
+}
+.contact_info_sec h4{
+    letter-spacing: 1px;
+    padding-bottom: 15px;
+}
+
+.info_single{
+    margin: 30px 0px;
+}
+.info_single i{
+    margin-right: 15px;
+}
+.info_single span{
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+button.contact_form_submit {
+    background: linear-gradient(to top right, #1325e8 -5%, #8f10b7 100%);
+    border: none;
+    color: #fff;
+    padding: 10px 15px;
+    width: 100%;
+    margin-top: 25px;
+    border-radius: 35px;
+    cursor: pointer;
+    font-size: 14px;
+    letter-spacing: 2px;
+}
+.socil_item_inner li{
+    list-style: none;
+}
+.socil_item_inner li a{
+    color: #fff;
+    margin: 0px 15px;
+    font-size: 14px;
+}
+.socil_item_inner{
+    padding-bottom: 10px;
+}
+</style>
+<div>
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="contact_inner">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="contact_form_inner">
+                            <div class="contact_field">
+                                <h3>Contact Us</h3>
+                                <p>Feel Free to contact us any time. We will get back to you as soon as we can!.</p>
+                                <input type="text" class="form-control form-group" placeholder="Name" />
+                                <input type="text" class="form-control form-group" placeholder="Email" />
+                                <textarea class="form-control form-group" placeholder="Message"></textarea>
+                                <button class="contact_form_submit">Send</button>
+                            </div>
                         </div>
-                        <div class="text pl-3">
-                          <p>
-                            <span>Address:</span> 198 West 21th Street, Suite 721 New York NY 10016
-                          </p>
-                        </div>
-                      </div>
-                      <div class="dbox w-100 d-flex align-items-center">
-                        <div class="icon d-flex align-items-center justify-content-center">
-                          <span class="fa fa-phone"></span>
-                        </div>
-                        <div class="text pl-3">
-                          <p>
-                            <span>Phone:</span>
-                            <a href="tel://1234567920">+ 1235 2355 98</a>
-                          </p>
-                        </div>
-                      </div>
-                      <div class="dbox w-100 d-flex align-items-center">
-                        <div class="icon d-flex align-items-center justify-content-center">
-                          <span class="fa fa-paper-plane"></span>
-                        </div>
-                        <div class="text pl-3">
-                          <p>
-                            <span>Email:</span>
-                            <a href="mailto:info@yoursite.com">info@yoursite.com</a>
-                          </p>
-                        </div>
-                      </div>
-                      <div class="dbox w-100 d-flex align-items-center">
-                        <div class="icon d-flex align-items-center justify-content-center">
-                          <span class="fa fa-globe"></span>
-                        </div>
-                        <div class="text pl-3">
-                          <p>
-                            <span>Website</span>
-                            <a href="#">yoursite.com</a>
-                          </p>
-                        </div>
-                      </div>
                     </div>
-                  </div>
                 </div>
-              </div>
-          </div>
-    </body>
-</html>
+                <div class="contact_info_sec">
+                    <h4>Contact Info</h4>
+                    <div class="d-flex info_single align-items-center">
+                        <i class="fas fa-headset"></i>
+                        <span>+91 8009 054294</span>
+                    </div>
+                    <div class="d-flex info_single align-items-center">
+                        <i class="fas fa-envelope-open-text"></i>
+                        <span>info@flightmantra.com</span>
+                    </div>
+                    <div class="d-flex info_single align-items-center">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <span>1000+ partners and 65+ Service city across India, USA, Canada & UAE</span>
+                    </div>
+    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
