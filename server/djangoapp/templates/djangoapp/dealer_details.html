@@ -1,18 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Dealership Review</title>
-    {% load static %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-</head>
-
-    <body>
-
-    <!--Add a nav bar here -->
-
+{% extends 'base.html' %}
+{% block content %}
     <!-- Add reviews as cards -->
+    {% if user.is_authenticated %}
+        <a class="btn btn-link" href="{% url 'djangoapp:add_review' dealer_id %}" style="float:right">Write a Review</a>
+    {% endif %}
 
-    </body>
-
-</html>
+    <h3>Review for Dealer Id: {{dealer_id}}</h3>
+    <div class="card-columns">
+        {% for review in reviews %}
+            {% if review.car_make %}
+            <div class="card" style="overflow: scroll; overflow-x: hidden;">
+                <img src="{{MEDIA_URL}}/emoji/{{review.sentiment}}.png" class="card-img-left" style="float: left; height: 40px; width: 40px; display: inline-block;">
+                <div class="card-body" style="text-align: center;">
+                    <h5 class="card-title" style="display: inline-block;">{{ review.car_make }}, {{ review.car_model }}</h5>
+                    <h5 class="card-title">{{ review.car_year }}</h5>
+                    <p class="card-text" style="text-align: left;">{{ review.review }}</p>
+                </div>
+            </div>
+            <!-- some review data may be missing , using default values-->
+            {% else %}
+            <div class="card" style="soverflow: scroll; overflow-x: hidden;">
+                <img src="{{MEDIA_URL}}/emoji/{{review.sentiment}}.png" class="card-img-left" style="float: left; height: 40px; width: 40px; display: inline-block;">
+                <div class="card-body" style="text-align: center;">
+                    <h5 class="card-title" style="display: inline-block;">Review</h5>
+                    <h5 class="card-title"></h5>
+                    <p class="card-text" style="text-align: left;">{{ review.review }}</p>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}

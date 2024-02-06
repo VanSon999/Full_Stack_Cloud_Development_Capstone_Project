@@ -10,6 +10,8 @@ from datetime import datetime
 import logging
 import json
 
+REVIEW_URL = "https://nguyenvanson-5000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai"
+DEALERSHIP_URL = "https://nguyenvanson-3000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai"
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
@@ -44,7 +46,7 @@ def login_request(request):
             # If user is valid, call login method to login current user
             login(request, user)
     
-    return render(request, 'djangoapp/index.html', context)
+    return redirect('djangoapp:index')
 
 # Create a `logout_request` view to handle sign out request
 def logout_request(request):
@@ -90,28 +92,26 @@ def registration_request(request):
 # Update the `get_dealerships` view to render the index page with a list of dealerships
 def get_dealerships(request):
     if request.method == "GET":
-        url = "https://nguyenvanson-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+        context = {}
+        url = DEALERSHIP_URL + "/dealerships/get"
         # Get dealers from the URL
         dealerships = get_dealers_from_cf(url)
-        # Concat all dealer's short name
-        dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
-        # Return a list of dealer short name
-        return HttpResponse(dealer_names)
+        context["dealerships"] = dealerships
+        return render(request, 'djangoapp/index.html', context)
 
 
 # Create a `get_dealer_details` view to render the reviews of a dealer
 def get_dealer_details(request, dealer_id):
     context = {}
     if request.method == "GET":
-        url = 'https://nguyenvanson-5000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/get_reviews'
+        url = REVIEW_URL + '/api/get_reviews'
         reviews = get_dealer_reviews_from_cf(url, dealer_id=dealer_id)
-        # context = {
-        #     "reviews":  reviews, 
-        #     "dealer_id": dealer_id
-        # }
-        review_str = ' '.join([review.review + " " + review.sentiment for review in reviews])
-        return HttpResponse(review_str)
-        # return render(request, 'djangoapp/dealer_details.html', context)
+        context = {
+            "reviews":  reviews, 
+            "dealer_id": dealer_id
+        }
+
+        return render(request, 'djangoapp/dealer_details.html', context)
 
 # Create a `add_review` view to submit a review
 # def add_review(request, dealer_id):
@@ -119,19 +119,20 @@ def add_review(request, dealer_id):
     # User must be logged in before posting a review
     if request.user.is_authenticated:
         # GET request renders the page with the form for filling out a review
-        # if request.method == "GET":
-        #     url = f"https://nguyenvanson-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get?id={dealer_id}"
-        #     # Get dealer details from the API
-        #     context = {
-        #         "cars": CarModel.objects.all(),
-        #         "dealer": get_dealer_by_id(url, dealer_id=dealer_id),
-        #     }
-        #     return render(request, 'djangoapp/add_review.html', context)
+        if request.method == "GET":
+            url = f"{DEALERSHIP_URL}/dealerships/get?id={dealer_id}"
+            # Get dealer details from the API
+            context = {
+                "cars": CarModel.objects.filter(dealer_id=dealer_id),
+                "dealer": get_dealer_by_id(url, dealer_id=dealer_id),
+            }
+            return render(request, 'djangoapp/add_review.html', context)
 
         # POST request posts the content in the review submission form to the Cloudant DB using the post_review Cloud Function
         if request.method == "POST":
             form = request.POST
             review = dict()
+            review["id"] = dealer_id
             review["name"] = f"{request.user.first_name} {request.user.last_name}"
             review["dealership"] = dealer_id
             review["review"] = form["content"]
@@ -141,7 +142,7 @@ def add_review(request, dealer_id):
             car = CarModel.objects.get(pk=form["car"])
             review["car_make"] = car.car_make.name
             review["car_model"] = car.name
-            review["car_year"] = car.year
+            review["car_year"] = car.year.strftime("%Y")
             
             # If the user bought the car, get the purchase date
             if form.get("purchasecheck"):
@@ -149,8 +150,8 @@ def add_review(request, dealer_id):
             else: 
                 review["purchase_date"] = None
 
-            url = "https://nguyenvanson-5000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/post_review"  # API Cloud Function route
-            json_payload = {"review": review}  # Create a JSON payload that contains the review data
+            url = REVIEW_URL + "/api/post_review"  # API Cloud Function route
+            json_payload = review  # Create a JSON payload that contains the review data
 
             # Performing a POST request with the review
             result = post_request(url, json_payload, dealerId=dealer_id)
@@ -166,3 +167,16 @@ def add_review(request, dealer_id):
         print("User must be authenticated before posting a review. Please log in.")
         return redirect("djangoapp:login")
 
+# Gets a single dealer from the Cloudant DB with the Cloud Function get-dealerships
+# Requires the dealer_id parameter with only a single value
+def get_dealer_by_id(url, dealer_id):
+    # Call get_request with the dealer_id param
+    json_result = get_request(url, dealerId=dealer_id)
+    # Create a CarDealer object from response
+    dealer = json_result[0]
+    dealer_obj = CarDealer(address=dealer["address"], city=dealer["city"], full_name=dealer["full_name"],
+                           id=dealer["id"], lat=dealer["lat"], long=dealer["long"],
+                           short_name=dealer["short_name"],
+                           st=dealer["st"], state=dealer["state"], zip=dealer["zip"])
+
+    return dealer_obj
